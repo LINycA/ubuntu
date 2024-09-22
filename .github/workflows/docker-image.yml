@@ -1,24 +1,27 @@
-name: Docker Image CI
+name: Build and Save Docker Image
 
 on:
   push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
+    branches:
+      - main
 
 jobs:
-
   build:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag arnolin/ubuntu:latest
-    
-    - name: save
-      uses: actions/upload-artifact@v2
-      with: 
-        name: docker-image
-        path: /arnolin/ubuntu
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          tags: your-docker-registry/your-image-name:${{ github.sha }}
+
+      - name: Save Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: docker-image
+          path: /
